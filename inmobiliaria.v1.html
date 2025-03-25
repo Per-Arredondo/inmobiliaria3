@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda tu cita inmobiliaria</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1f3c88;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    select, input[type="date"], input[type="time"], button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #1f3c88;
+      color: white;
+      font-weight: bold;
+      margin-top: 2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #163075;
+    }
+
+    .message {
+      margin-top: 1.5rem;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .icon-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fa-solid fa-house-circle-check"></i> Agenda tu cita para visitar tu próxima propiedad</h1>
+  </header>
+  <main>
+    <form id="appointmentForm">
+      <label class="icon-label" for="propertyType"><i class="fa-solid fa-building"></i> Tipo de propiedad:</label>
+      <select id="propertyType" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Casa habitación">Casa habitación</option>
+        <option value="Departamento">Departamento</option>
+        <option value="Oficinas">Oficinas</option>
+      </select>
+
+      <label class="icon-label" for="appointmentDate"><i class="fa-solid fa-calendar-day"></i> Fecha de la cita:</label>
+      <input type="date" id="appointmentDate" min="" required>
+
+      <label class="icon-label" for="appointmentTime"><i class="fa-solid fa-clock"></i> Hora de la cita:</label>
+      <input type="time" id="appointmentTime" min="09:00" max="18:00" required>
+
+      <label class="icon-label" for="appointmentType"><i class="fa-solid fa-handshake"></i> Tipo de cita:</label>
+      <select id="appointmentType" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Visita a propiedad">Visita a propiedad</option>
+        <option value="Asesoría inmobiliaria">Asesoría inmobiliaria</option>
+      </select>
+
+      <button type="submit"><i class="fa-solid fa-calendar-check"></i> Agendar cita</button>
+    </form>
+
+    <div class="message" id="responseMessage"></div>
+  </main>
+
+  <script>
+    const appointmentForm = document.getElementById("appointmentForm");
+    const appointmentDate = document.getElementById("appointmentDate");
+    const responseMessage = document.getElementById("responseMessage");
+
+    // Lógica para agendar citas
+    const appointments = {}; // clave: fecha, valor: número de citas
+
+    // Establecer fecha mínima como hoy
+    const today = new Date();
+    const minDate = today.toISOString().split('T')[0];
+    appointmentDate.setAttribute("min", minDate);
+
+    appointmentForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const propertyType = document.getElementById("propertyType").value;
+      const date = document.getElementById("appointmentDate").value;
+      const time = document.getElementById("appointmentTime").value;
+      const type = document.getElementById("appointmentType").value;
+
+      if (!propertyType || !date || !time || !type) {
+        responseMessage.textContent = "Por favor, completa todos los campos.";
+        responseMessage.className = "message error";
+        return;
+      }
+
+      // Verificar si ya hay 8 citas en la fecha seleccionada
+      if (!appointments[date]) {
+        appointments[date] = [];
+      }
+
+      if (appointments[date].length >= 8) {
+        responseMessage.textContent = "Lo sentimos, ya se han agendado 8 citas para esta fecha.";
+        responseMessage.className = "message error";
+        return;
+      }
+
+      // Guardar la nueva cita
+      appointments[date].push({ time, propertyType, type });
+
+      responseMessage.textContent = `¡Tu cita para ${type} fue agendada con éxito el ${date} a las ${time} para una ${propertyType}!`;
+      responseMessage.className = "message success";
+
+      // Limpiar el formulario
+      appointmentForm.reset();
+    });
+  </script>
+</body>
+</html>
